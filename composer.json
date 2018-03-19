@@ -1,0 +1,13 @@
+{
+    "name": "gromodar/tasks",
+    "description": "Тестовая задача",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Symedia",
+            "email": "info@symedia.ru"
+        }
+    ],
+    "require": {}
+}
