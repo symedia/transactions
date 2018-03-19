@@ -78,13 +78,25 @@ class Dispatcher
         $action = $route['action'];
         
         if (!class_exists($controllerClassName)) {
-            return;
+            $this->request
+                ->setParam('component', 'index')
+                ->setParam('controller', 'error') 
+                ->setParam('action', 'error');
+            include_once APPLICATION_PATH . '/mvc/components/index/controllers/Error.php';
+            $error = new \Project\Index\Controller\Error();
+            return $error->error();
         }
         
         $controller = new $controllerClassName($this->request);
         
         if (!method_exists($controller, $action)) {
-            return;
+            $this->request
+                ->setParam('component', 'index')
+                ->setParam('controller', 'error') 
+                ->setParam('action', 'error');
+            include_once APPLICATION_PATH . '/mvc/components/index/controllers/Error.php';
+            $error = new \Project\Index\Controller\Error();
+            return $error->error();
         }
        
         $controllerClassNameParts = explode('\\', $controllerClassName);

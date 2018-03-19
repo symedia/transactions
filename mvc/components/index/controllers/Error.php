@@ -29,41 +29,14 @@ namespace Project\Index\Controller;
 /**
  *
  * 
- * @category   
- * @package    Auth
+ * @category   Project\Index\Controller
+ * @package    Error
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
-class Auth extends \Project\Controller
+class Error
 {
-    public function index()
+    public function error()
     {
-        if ($this->isAuth) {
-            $this->redirect();
-        }
-        
-        $data = [];
-        if ($this->request->isPost() && !$this->isAuth) {
-            $data['login'] = filter_var($this->request->post('login'), FILTER_SANITIZE_STRING);
-            $data['password'] = filter_var($this->request->post('password'), 
-                    FILTER_VALIDATE_REGEXP, [
-                         'options' => ['regexp' => '/^([a-zA-Z0-9\_\-\$\@\!]+)/']
-                    ]);
-            
-            $userModel = new \Project\Index\Model\User();
-            $user = $userModel->get((object)$data);
-            unset($user->password);
-            if ($user) {
-                $_SESSION['user'] = $user;
-                $this->redirect();
-            }
-        }
-        return $data;
-    }
-    
-    public function logout()
-    {
-        session_start();
-        session_destroy();
-        $this->redirect();
+        header("HTTP/1.0 404 Not Found");
     }
 }

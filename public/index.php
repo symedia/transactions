@@ -26,7 +26,6 @@
 if (PHP_SESSION_NONE === session_status()) {
     session_start();
 }
-session_write_close();
 
 defined('APPLICATION_PATH') || define('APPLICATION_PATH', dirname(__DIR__));
 
@@ -39,3 +38,5 @@ if (!class_exists(\Project\Application::class)) {
 }
 
 \Project\Application::instance()->start();
+
+session_write_close();
