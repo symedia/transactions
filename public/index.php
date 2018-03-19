@@ -23,10 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 if (PHP_SESSION_NONE === session_status()) {
     session_start();
 }
+session_write_close();
 
 defined('APPLICATION_PATH') || define('APPLICATION_PATH', dirname(__DIR__));
 

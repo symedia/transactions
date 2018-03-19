@@ -35,38 +35,44 @@ namespace Project\Index\Controller;
  */
 class Index extends \Project\Controller
 {
+
     protected function init()
     {
-         if (!$this->isAuth) {
-             $this->redirect('/login');
-         }        
+        if (!$this->isAuth) {
+            $this->redirect('/login');
+        }
     }
 
     public function index()
-     {
+    {
+        $userModel = new \Project\Index\Model\User;
+
         $data = [
-            'user' => $this->user
+            'user' => $this->user,
+            'users' => $userModel->getUsers($this->user->id)
         ];
-        
-        if (isset($_SESSION['msg'])) {
-            $data['msg'] = $_SESSION['msg'];
-            unset($_SESSION['msg']);
+
+        if ($this->request->isPost()) {
+
+            $id = filter_var($this->request->post('id'), FILTER_VALIDATE_INT);
+            if (false === $id) {
+                $data['msg']['id'] = 'Необходимо выбрать пользователя!';
+            }
+
+            $spend = filter_var($this->request->post('spend'), FILTER_VALIDATE_INT);
+            if (0 > $spend || $spend > $this->user->balance || false === $spend) {
+                $data['msg']['spend'] = 'Неверная сумма списания!';
+            }
+
+            if (isset($data['msg'])) {
+                return $data;
+            }
+
+            $result = $userModel->transaction($this->user, $id, $spend);
+            $this->redirect();
         }
-        
+
         return $data;
-     }
-     
-     public function spend()
-     {
-         if ($this->request->isPost()) {
-      
-             $amount = filter_var($this->request->post('amount'), 
-                     FILTER_VALIDATE_INT);
-             
-             if (0 < $amount || $amount > $this->user->balance) {
-                 $_SESSION['msg'] = 'Неверная сумма списания!';
-                 $this->redirect();
-             }
-         }
-     }
+    }
+
 }

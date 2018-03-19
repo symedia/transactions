@@ -37,21 +37,49 @@ class User extends \Project\Model
 {
     public function get($cond)
     {
-        $sql = "SELECT * FROM `users` WHERE ";
+        $sql = "SELECT * FROM `users` ";
         if (isset($cond->id)) {
             $binds[] = "`id` = {$cond->id}";
+            $useIndex = 'id';
         }
         if (isset($cond->login)) {
             $binds[] = "`login` = '{$cond->login}'";
+            $useIndex = 'idLogin';
         }
         if (isset($cond->password)) {
             $binds[] = "`password` = '{$cond->password}'";
         }
-        if (isset($cond->balance)) {
-            $binds[] = "`balance` = '{$cond->balance}'";
-        }
-        
+        $sql .= str_replace('?', $useIndex, " USE INDEX (`?`) ");
+        $sql .= " WHERE ";
         $sql .= implode(" AND ", $binds);
         return $this->db->query($sql)->fetch_object();
+    }
+    
+    public function save($user)
+    {
+        $sql = "UPDATE `users` "
+                . "SET `balance` = '{$user->balance}', "
+                . "`spend` = '{$user->spend}', "
+                . "`hash` = '{$user->hash}' "
+                . "WHERE `id` = '{$user->id}'";
+                //exit($sql);
+        return $this->db->query($sql);
+    }
+    
+    public function getUsers($id)
+    {
+        $sql = "SELECT * FROM `users` WHERE `id` <> {$id}";
+        return $this->db->query($sql);
+    }
+    
+    public function transaction($user, $id, $spend)
+    {
+        $this->db->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+        $this->db->query("SELECT * FROM `users` WHERE `id` = {$user->id} FOR UPDATE");
+        $this->db->query("SELECT * FROM `users` WHERE `id` = {$id} FOR UPDATE");
+        $this->db->query("UPDATE `users` SET `balance` = `balance` - {$spend} WHERE `id` = {$user->id}");
+        $this->db->query("UPDATE `users` SET `balance` = `balance` + {$spend} WHERE `id` = {$id}");
+        $this->db->commit();
+        
     }
 }

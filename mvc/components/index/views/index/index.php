@@ -23,24 +23,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+/**
+     <?php if ($this->confirm): ?>
+    <br>
+    <dt><label for="amount">Подтвреждение списания:</label></dt>
+    <dd>
+      <p>Введите проверочный код: <?= $this->user->hash ?></p>
+      <input type="input" value="" name="hash" style="width:150px;box-sizing:border-box;">
+      <?php if (isset($this->msg['confirmError'])): ?>
+      <p style="color:red;"><?= $this->msg['confirmError'] ?></p>
+      <?php endif; ?>
+    </dd>    
+    <?php endif; ?>
+ */
 ?>
 
 <h1>Приветствуем <?= $this->user->login ?>!</h1>
+<p><a href="/logout">Выход</a></p>
 
-<p>Сейчас на вашем счету: <?= $this->rub($this->user->balance) ?> р.</p>
+<p>Сейчас на вашем счете: <?= $this->rub($this->user->balance) ?> р.</p>
 
-<h2>Вы можете списать сумму:</h2>
+<h2>Вы можете перевести сумму любому пользователю:</h2>
 
-<form action="/spend" method="post">
+<form action="" method="post">
   <dl>
-    <dt><label for="amount">Сумма для списания:</label></dt>
+    <dt><label for="id">Пользователь:</label></dt>
+    <dd><select name="id" id="id" style="width:150px;box-sizing:border-box;">
+        <?php while($user = $this->users->fetch_object()): ?>
+        <option value="<?= $user->id ?>"<?php if ($this->id == $user->id): ?> selected<?php endif; ?>><?= $user->login ?></option>
+        <?php endwhile; ?>
+      </select>
+      <?php if (isset($this->msg['id'])): ?>
+      <p style="color:red;"><?= $this->msg['id'] ?></p>
+      <?php endif; ?>
+    </dd>
+    <dt><label for="amount">Сумма для перевода:</label></dt>
     <dd>
-      <input type="input" value="" name="amount">
-      <?php if ($this->msg): ?>
-      <p style="color:red;"><?= $this->msg ?></p>
+      <input type="input" value="<?= $this->spend ?>" name="spend" style="width:150px;box-sizing:border-box;">
+      <?php if (isset($this->msg['spend'])): ?>
+      <p style="color:red;"><?= $this->msg['spend'] ?></p>
       <?php endif; ?>
     </dd>
   </dl>
-  <p><input type="submit" value="Списать"></p>
+  <p><input type="submit" value="Перевести"></p>
 </form>
 

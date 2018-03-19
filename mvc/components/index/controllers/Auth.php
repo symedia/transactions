@@ -54,7 +54,6 @@ class Auth extends \Project\Controller
             unset($user->password);
             if ($user) {
                 $_SESSION['user'] = $user;
-                session_write_close();
                 $this->redirect();
             }
         }

@@ -1,6 +1,6 @@
 <?php
 
-/**
+/** 
  * The MIT License
  *
  * Copyright 2018 Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd.
@@ -24,16 +24,5 @@
  * THE SOFTWARE.
  */
 
-namespace Project\Index\Controller;
+?>
 
-/**
- *
- * 
- * @category   
- * @package    Posts
- * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
- */
-class Posts
-{
-    
-}
