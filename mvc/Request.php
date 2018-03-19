@@ -24,6 +24,8 @@
  * THE SOFTWARE.
  */
 
+namespace Project;
+
 /**
  *
  * 
@@ -33,17 +35,18 @@
  */
 class Request
 {
+   
+    /**
+     * @var array
+     */
+    protected $params;
+
+
     /**
      * $_SERVER
      * @var array
      */
     protected $server;
-    
-    /**
-     * $_REQUEST
-     * @var array
-     */
-    protected $request;
     
     /**
      * $_POST
@@ -52,57 +55,66 @@ class Request
     protected $post;
     
     /**
-     * $_GET
-     * @var array
-     */
-    protected $get;
-    
-    /**
-     *
-     * @var null|bullean
-     */
-    protected $isGet;
-    
-    /**
      *
      * @var null|bullean
      */
     protected $isPost;
-   
+    
     /**
-     *
      * @var string
      */
-    protected $uri;
+    protected $requestUri;
+   
             
     function __construct()
     {
         $server = filter_input_array(INPUT_SERVER);
         if ($server) {
             $this->server = $server;
-            $this->host = filter_input(INPUT_SERVER, 'HTTP_HOST');
-            $this->protocol = filter_input(INPUT_SERVER, 'HTTPS');
-            $this->uri = $this->protocol . $this->host;
+            $this->requestUri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL);
         }
-        
-        $request = filter_input_array(INPUT_REQUEST);
-        if ($request) {
-            $this->request = $request;
-        }
-        
         $post = filter_input_array(INPUT_POST);
         if ($post) {
             $this->isPost = true;
             $this->post = $post;
         }
-        
-        $get = filter_input_array(INPUT_GET);
-        if ($get) {
-            $this->isGet = true;
-            $this->get = $get;
-            $this->uri .= $this->uri ? $this->get : null ;
-        }
+    }
+    
+    public function getRequestUri()
+    {
+        return $this->requestUri;
     }
     
     
+    public function getParams($name = null)
+    {
+        if (null === $name) {
+            return $this->params;
+        }
+        return isset($this->params[$name]) ? $this->params[$name] : null;
+    }
+    
+    public function setParam($name, $value = null)
+    {
+        $this->params[$name] = $value;
+        return $this;
+    }
+    
+    public function isPost()
+    {
+        return $this->isPost;
+    }
+    
+    public function post($name = null)
+    {
+        if (null === $name) {
+            return $this->post;
+        }
+        return isset($this->post[$name]) ? $this->post[$name] : null;
+    }
+    
+    public function getHost()
+    {
+        return filter_var($this->server['HTTP_HOST'], FILTER_SANITIZE_URL);
+    }
 }

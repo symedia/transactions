@@ -24,6 +24,8 @@
  * THE SOFTWARE.
  */
 
+namespace Project;
+
 /**
  *
  * 
@@ -34,7 +36,6 @@
 class Router
 {
     /**
-     *
      * @var array
      */
     protected $routes;
@@ -43,5 +44,18 @@ class Router
     {
         $this->routes = include_once APPLICATION_PATH 
                 . DIRECTORY_SEPARATOR . 'configs/routes.php';
+    }
+    
+    /**
+     * @param string $requestUri
+     * @return array
+     */
+    public function getRoute($requestUri)
+    {
+        foreach($this->routes as $item) {
+            if ($item['route'] === $requestUri) {
+                return $item;
+            }
+        }
     }
 }

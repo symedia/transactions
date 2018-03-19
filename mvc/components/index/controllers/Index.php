@@ -23,6 +23,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+namespace Project\Index\Controller;
+
 /**
  * Контроллер по умолчанию
  * 
@@ -30,6 +33,40 @@
  * @package    Default
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
-class Index {
+class Index extends \Project\Controller
+{
+    protected function init()
+    {
+         if (!$this->isAuth) {
+             $this->redirect('/login');
+         }        
+    }
 
+    public function index()
+     {
+        $data = [
+            'user' => $this->user
+        ];
+        
+        if (isset($_SESSION['msg'])) {
+            $data['msg'] = $_SESSION['msg'];
+            unset($_SESSION['msg']);
+        }
+        
+        return $data;
+     }
+     
+     public function spend()
+     {
+         if ($this->request->isPost()) {
+      
+             $amount = filter_var($this->request->post('amount'), 
+                     FILTER_VALIDATE_INT);
+             
+             if (0 < $amount || $amount > $this->user->balance) {
+                 $_SESSION['msg'] = 'Неверная сумма списания!';
+                 $this->redirect();
+             }
+         }
+     }
 }

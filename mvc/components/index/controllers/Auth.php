@@ -24,6 +24,8 @@
  * THE SOFTWARE.
  */
 
+namespace Project\Index\Controller;
+
 /**
  *
  * 
@@ -31,7 +33,37 @@
  * @package    Auth
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
-class Auth
+class Auth extends \Project\Controller
 {
+    public function index()
+    {
+        if ($this->isAuth) {
+            $this->redirect();
+        }
+        
+        $data = [];
+        if ($this->request->isPost() && !$this->isAuth) {
+            $data['login'] = filter_var($this->request->post('login'), FILTER_SANITIZE_STRING);
+            $data['password'] = filter_var($this->request->post('password'), 
+                    FILTER_VALIDATE_REGEXP, [
+                         'options' => ['regexp' => '/^([a-zA-Z0-9\_\-\$\@\!]+)/']
+                    ]);
+            
+            $userModel = new \Project\Index\Model\User();
+            $user = $userModel->get((object)$data);
+            unset($user->password);
+            if ($user) {
+                $_SESSION['user'] = $user;
+                session_write_close();
+                $this->redirect();
+            }
+        }
+        return $data;
+    }
     
+    public function logout()
+    {
+        unset($_SESSION['user']);
+        $this->redirect();
+    }
 }

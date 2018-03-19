@@ -24,6 +24,8 @@
  * THE SOFTWARE.
  */
 
+namespace Project;
+
 /**
  *
  * 
@@ -33,5 +35,63 @@
  */
 class View
 {
+    protected $result;
+
+    protected $request;
     
+    protected $componentPath;
+
+    /**
+     * @param array $result
+     * @param \Project\Request $request
+     */
+    public function __construct($result, \Project\Request $request)
+    {
+        $this->result = $result;
+        $this->request = $request;
+        
+        $component = $this->request->getParams('component');
+        $this->componentPath = APPLICATION_PATH 
+                . '/mvc/components/' . $component;
+        
+        $this->layout();
+    }
+    
+    public function content()
+    {
+        $controller = $this->request->getParams('controller');
+        $action = $this->request->getParams('action');
+        
+        $fileTemplate = $this->componentPath. '/views/' . $controller  
+                . DIRECTORY_SEPARATOR . $action . '.php';
+        
+        if (!file_exists($fileTemplate)) {
+            $msg = 'Файл макета не найден: ' . $fileTemplate;
+            throw new \Exception($msg);
+        }
+        
+        require $fileTemplate;       
+    }
+    
+    public function __get($name)
+    {
+        return isset($this->result[$name]) ? $this->result[$name] : null;
+    }
+    
+    protected function layout()
+    {
+        $layoutPath = $this->componentPath . '/views/layout.php';
+
+        if (!file_exists($layoutPath)) {
+            $msg = 'Файл шаблона не найден: ' . $layoutPath;
+            throw new \Exception($msg);
+        }
+        
+        require_once $layoutPath;
+    }
+    
+    public function rub($number)
+    {
+        return number_format($number, 2, ',', ' ');
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 
-/** 
+/**
  * The MIT License
  *
  * Copyright 2018 Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd.
@@ -23,21 +23,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-?>
-<!DOCTYPE html>
-<!--
-Writen by Gregory V Lominoga (Gromodar)
-E-Mail: lominogagv@gmail.com
-Produced by Symedia studio
-http://symedia.ru
-E-Mail: info@symedia.ru
--->
-<html>
-  <head>
-    <title>Тестовый проект</title>
-    <meta charset="UTF-8">
-  </head>
-  <body>
-    <?= $this->content() ?>
-  </body>
-</html>
+
+namespace Project;
+
+/**
+ *
+ * 
+ * @category   Project
+ * @package    ВИ
+ * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
+ */
+class Db
+{
+    protected static $instance;
+    
+    /**
+     * @var \mysqli
+     */
+    protected $db;
+            
+    function __construct()
+    {
+        $this->db = new \mysqli('localhost', 'root', '123', 'task');
+
+        if ($this->db->connect_errno) {
+            $msg = 'Ошибка установки соединения с базой данных';
+            $msg .= 'Номер_ошибки: ' . $this->db->connect_errno . "\n";
+            $msg .= 'Ошибка: ' . $this->db->connect_error . "\n";            
+            throw new \Exception($msg);
+        }
+        
+    }
+    
+    public static function getInstance()
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new Db();
+        }
+        
+        return self::$instance;
+    }
+    
+    public function getDb()
+    {
+        return $this->db;
+    }
+}

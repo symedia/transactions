@@ -24,20 +24,23 @@
  * THE SOFTWARE.
  */
 ?>
-<!DOCTYPE html>
-<!--
-Writen by Gregory V Lominoga (Gromodar)
-E-Mail: lominogagv@gmail.com
-Produced by Symedia studio
-http://symedia.ru
-E-Mail: info@symedia.ru
--->
-<html>
-  <head>
-    <title>Тестовый проект</title>
-    <meta charset="UTF-8">
-  </head>
-  <body>
-    <?= $this->content() ?>
-  </body>
-</html>
+
+<h1>Приветствуем <?= $this->user->login ?>!</h1>
+
+<p>Сейчас на вашем счету: <?= $this->rub($this->user->balance) ?> р.</p>
+
+<h2>Вы можете списать сумму:</h2>
+
+<form action="/spend" method="post">
+  <dl>
+    <dt><label for="amount">Сумма для списания:</label></dt>
+    <dd>
+      <input type="input" value="" name="amount">
+      <?php if ($this->msg): ?>
+      <p style="color:red;"><?= $this->msg ?></p>
+      <?php endif; ?>
+    </dd>
+  </dl>
+  <p><input type="submit" value="Списать"></p>
+</form>
+

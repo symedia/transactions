@@ -1,6 +1,6 @@
 <?php
 
-/**
+/** 
  * The MIT License
  *
  * Copyright 2018 Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd.
@@ -24,14 +24,17 @@
  * THE SOFTWARE.
  */
 
-/**
- *
- * 
- * @category   
- * @package    Posts
- * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
- */
-class Posts
-{
-    
-}
+?>
+
+<div style="width:300px;margin:0 auto;">
+  <h1 style="font-size:14px;">Войдите чтобы начать работать</h1>
+    <form action="/login" method="post">
+      <dl>
+        <dt><label for="login">Логин:</label></dt>
+        <dd><input type="text" name="login" value="<?= $this->login ?>"></dd>
+        <dt><label for="password">Пароль:</label></dt>
+        <dd><input type="password" name="password"></dd>
+      </dl>
+      <input type="submit" value="Войти">
+    </form>
+</div>

@@ -24,4 +24,18 @@
  * THE SOFTWARE.
  */
 
-Application::start();
+if (PHP_SESSION_NONE === session_status()) {
+    session_start();
+}
+
+defined('APPLICATION_PATH') || define('APPLICATION_PATH', dirname(__DIR__));
+
+include __DIR__ . '/../vendor/autoload.php';
+
+if (!class_exists(\Project\Application::class)) {
+    throw new RuntimeException(
+        'Unable to load application.'
+    );
+}
+
+\Project\Application::instance()->start();

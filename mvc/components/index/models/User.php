@@ -1,6 +1,6 @@
 <?php
 
-/** 
+/**
  * The MIT License
  *
  * Copyright 2018 Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd.
@@ -23,21 +23,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-?>
-<!DOCTYPE html>
-<!--
-Writen by Gregory V Lominoga (Gromodar)
-E-Mail: lominogagv@gmail.com
-Produced by Symedia studio
-http://symedia.ru
-E-Mail: info@symedia.ru
--->
-<html>
-  <head>
-    <title>Тестовый проект</title>
-    <meta charset="UTF-8">
-  </head>
-  <body>
-    <?= $this->content() ?>
-  </body>
-</html>
+
+namespace Project\Index\Model;
+
+/**
+ *
+ * 
+ * @category   
+ * @package    User
+ * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
+ */
+class User extends \Project\Model
+{
+    public function get($cond)
+    {
+        $sql = "SELECT * FROM `users` WHERE ";
+        if (isset($cond->id)) {
+            $binds[] = "`id` = {$cond->id}";
+        }
+        if (isset($cond->login)) {
+            $binds[] = "`login` = '{$cond->login}'";
+        }
+        if (isset($cond->password)) {
+            $binds[] = "`password` = '{$cond->password}'";
+        }
+        if (isset($cond->balance)) {
+            $binds[] = "`balance` = '{$cond->balance}'";
+        }
+        
+        $sql .= implode(" AND ", $binds);
+        return $this->db->query($sql)->fetch_object();
+    }
+}

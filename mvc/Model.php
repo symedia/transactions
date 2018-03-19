@@ -24,14 +24,24 @@
  * THE SOFTWARE.
  */
 
+namespace Project;
+
 /**
  *
  * 
- * @category   
- * @package    Posts
+ * @category   Project
+ * @package    Model
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
-class Posts
+class Model
 {
-    
+    /**
+     * @var \mysqli
+     */
+    protected $db;
+            
+    function __construct()
+    {
+        $this->db = \Project\Db::getInstance()->getDb();
+    }
 }

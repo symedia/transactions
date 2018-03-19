@@ -24,6 +24,8 @@
  * THE SOFTWARE.
  */
 
+namespace Project;
+
 /**
  * Оснонвной класс приложения.
  * 
@@ -35,102 +37,132 @@ class Application
 {
     /**
      * Синглтон класса
-     * @var Application
+     * @var \Project\Application
      */
     public static $instance;
     
     /**
      * Запрос
-     * @var Request 
+     * @var \Project\Request 
      */
     protected $request;
     
     /**
      * Роутер
-     * @var Router
+     * @var \Project\Router
      */
     protected $router;
     
     
     /**
      * Диспетчер
-     * @var Dispatcher
+     * @var \Project\Dispatcher
      */
     protected $dispatcher;
     
     /**
      * Представление
-     * @var View
+     * @var \Project\View
      */
     protected $view;
 
+    /**
+     * Конструирование объекта
+     */
     public function __construct()
     {
-        spl_autoload_register(array(__CLASS__, 'autoload'));
+        $this->request = new \Project\Request();
+       
+        $this->router = new \Project\Router($this->request);
         
-        $this->request = new Request();
-        
-        $this->router = new Router($this->request);
-        
-        $this->dispatcher = new Dispatcher($this->router);
-        
-        $result = $this->dispatcher->dispatch();
-        
-        $this->view = new View($result);
-    }
+        $this->dispatcher = new \Project\Dispatcher($this->router, $this->request);
+     }
 
-    public static function start()
+    /**
+     * Создание синглтона
+     * @return \Project\Application
+     */
+    public static function instance()
     {
         if (!isset(self::$instance)) {
             self::$instance = new Application();
         }
         
-        return self::$instance->view->render();
+        return self::$instance;
     }
     
+    /**
+     * Go!
+     */
+    public function start()
+    {
+        $result = $this->dispatcher->dispatch();
+        $this->view = new \Project\View($result, $this->request);       
+    }
+    
+    /**
+     * @return \Project\Request
+     */
     function getRequest(): Request
     {
         return $this->request;
     }
-
+    
+    
+    /**
+     * @return \Project\Router
+     */
     function getRouter(): Router
     {
         return $this->router;
     }
 
+    /**
+     * @return \Project\Dispatcher
+     */
     function getDispatcher(): Dispatcher
     {
         return $this->dispatcher;
     }
 
+    /**
+     * @return \Project\View
+     */
     function getView(): View
     {
         return $this->view;
     }
 
+    /**
+     * @param Request $request
+     */
     function setRequest(Request $request)
     {
         $this->request = $request;
     }
 
+    /**
+     * @param Router $router
+     */
     function setRouter(Router $router)
     {
         $this->router = $router;
     }
 
+    /**
+     * @param Dispatcher $dispatcher
+     */
     function setDispatcher(Dispatcher $dispatcher)
     {
         $this->dispatcher = $dispatcher;
     }
 
+    /**
+     * @param View $view
+     */
     function setView(View $view)
     {
         $this->view = $view;
     }
     
-    public function autoload($class)
-    {
-        
-    }
-
 }

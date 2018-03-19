@@ -9,5 +9,10 @@
             "email": "info@symedia.ru"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "Project\\": "mvc/"
+        }
+    },
     "require": {}
 }

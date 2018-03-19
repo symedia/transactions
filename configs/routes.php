@@ -28,19 +28,29 @@ return [
     [
         'name' => 'home',
         'route' => '/',
-        'controller' => Aplication\Mvc\Components\Index\Controllers\Index::class,
+        'component' => 'index',
+        'controller' => \Project\Index\Controller\Index::class,
         'action' => 'index'
     ],
     [
         'name' => 'login',
-        'route' => '/',
-        'controller' => Application\Mvc\Components\Index\Controllers\Auth::class,
+        'route' => '/login',
+        'component' => 'index',
+        'controller' => \Project\Index\Controller\Auth::class,
         'action' => 'index'
     ],
     [
-        'name' => 'posts',
-        'route' => '/posts',
-        'controller' => Application\Mvc\Componets\Index\Controller\Posts::class,
-        'action' => 'index'
+        'name' => 'logout',
+        'route' => '/logout',
+        'component' => 'index',
+        'controller' => \Project\Index\Controller\Auth::class,
+        'action' => 'logout'
+    ],
+    [
+        'name' => 'spend',
+        'route' => '/spend',
+        'component' => 'index',
+        'controller' => \Project\Index\Controller\Index::class,
+        'action' => 'spend'
     ]
 ];
