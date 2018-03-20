@@ -77,7 +77,7 @@ class User extends \Project\Model
         $this->db->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
         $this->db->query("SELECT * FROM `users` WHERE `id` = {$user->id} FOR UPDATE");
         $this->db->query("SELECT * FROM `users` WHERE `id` = {$id} FOR UPDATE");
-        $this->db->query("UPDATE `users` SET `balance` = `balance` - {$spend} WHERE `id` = {$user->id}");
+        $this->db->query("UPDATE `users` SET `balance` = `balance` - {$spend} WHERE `id` = {$user->id} AND `balance` >= {$spend}");
         $this->db->query("UPDATE `users` SET `balance` = `balance` + {$spend} WHERE `id` = {$id}");
         $this->db->commit();
         
