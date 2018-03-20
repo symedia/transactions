@@ -42,12 +42,6 @@ use Composer\Autoload\ClassLoader;
 class Application
 {
     /**
-     * Синглтон класса
-     * @var \Project\Application
-     */
-    public static $instance;
-    
-    /**
      * Запрос
      * @var \Project\Request 
      */
