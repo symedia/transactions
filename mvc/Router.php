@@ -27,8 +27,6 @@
 namespace Project;
 
 /**
- * 
- * 
  * @category   
  * @package    Router
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd

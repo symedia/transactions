@@ -27,8 +27,6 @@
 namespace Project;
 
 /**
- *
- * 
  * @category   
  * @package    Request
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
@@ -65,7 +63,6 @@ class Request
      */
     protected $requestUri;
    
-            
     function __construct()
     {
         $server = filter_input_array(INPUT_SERVER);

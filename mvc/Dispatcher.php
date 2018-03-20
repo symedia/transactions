@@ -31,8 +31,6 @@ use Project\Request;
 use Project\Index\Controller\Error;
 
 /**
- *
- * 
  * @category   
  * @package    Dispatcher
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
@@ -55,7 +53,6 @@ class Dispatcher
     protected $route;
     
     /**
-     *
      * @var \Project\Controller
      */
     protected $controller;
@@ -74,8 +71,6 @@ class Dispatcher
     
     /**
      * Диспетчеризация
-     * 
-     * Здесь накосячено немного
      * @return mixed
      */
     public function dispatch()
