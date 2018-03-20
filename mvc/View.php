@@ -26,6 +26,9 @@
 
 namespace Project;
 
+use Project\Request;
+use Exception;
+
 /**
  *
  * 
@@ -42,10 +45,10 @@ class View
     protected $componentPath;
 
     /**
-     * @param array $result
      * @param \Project\Request $request
+     * @param array $result
      */
-    public function __construct($result, \Project\Request $request)
+    public function __construct(Request $request, $result = null)
     {
         $this->result = $result;
         $this->request = $request;
@@ -67,7 +70,7 @@ class View
         
         if (!file_exists($fileTemplate)) {
             $msg = 'Файл макета не найден: ' . $fileTemplate;
-            throw new \Exception($msg);
+            throw new Exception($msg);
         }
         
         require $fileTemplate;       
@@ -84,7 +87,7 @@ class View
 
         if (!file_exists($layoutPath)) {
             $msg = 'Файл шаблона не найден: ' . $layoutPath;
-            throw new \Exception($msg);
+            throw new Exception($msg);
         }
         
         require_once $layoutPath;
@@ -92,6 +95,6 @@ class View
     
     public function rub($number)
     {
-        return number_format($number, 2, ',', ' ');
+        return number_format($number, 2, '.', ' ');
     }
 }

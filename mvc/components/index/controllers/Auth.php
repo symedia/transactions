@@ -26,43 +26,57 @@
 
 namespace Project\Index\Controller;
 
+use Project\Controller;
+use Project\Index\Model\User;
+
 /**
- *
+ * Контроллер авторизации
  * 
  * @category   
  * @package    Auth
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
-class Auth extends \Project\Controller
+class Auth extends Controller
 {
+    /**
+     * Авторизация
+     * @return array
+     */
     public function index()
     {
         if ($this->isAuth) {
             $this->redirect();
         }
         
-        $data = [];
-        if ($this->request->isPost() && !$this->isAuth) {
-            $data['login'] = filter_var($this->request->post('login'), FILTER_SANITIZE_STRING);
-            $data['password'] = filter_var($this->request->post('password'), 
-                    FILTER_VALIDATE_REGEXP, [
-                         'options' => ['regexp' => '/^([a-zA-Z0-9\_\-\$\@\!]+)/']
-                    ]);
+        if ($this->request->isPost()) {
+            $login = filter_var($this->request->post('login'), FILTER_SANITIZE_STRING);
+            $password = filter_var($this->request->post('password'), 
+                FILTER_VALIDATE_REGEXP, [
+                     'options' => ['regexp' => '/^([a-zA-Z0-9\_\-\$\@\!]+)/']
+                ]);
             
-            $userModel = new \Project\Index\Model\User();
-            $user = $userModel->get((object)$data);
-            unset($user->password);
+            $userModel = new User();
+            $user = $userModel->authenticate($login, $password);
             if ($user) {
+                session_start();
+                session_regenerate_id(true);
                 $_SESSION['user'] = $user;
+                session_write_close();
                 $this->redirect();
             }
         }
-        return $data;
     }
     
+    /**
+     * Разлогин
+     */
     public function logout()
     {
+        if (!$this->isAuth) {
+            $this->redirect();
+        }
         session_start();
+        session_regenerate_id(true);
         session_destroy();
         $this->redirect();
     }

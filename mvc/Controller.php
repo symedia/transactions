@@ -26,6 +26,9 @@
 
 namespace Project;
 
+use Project\Request;
+use Project\Index\Model\User;
+
 /**
  *
  * 
@@ -36,67 +39,38 @@ namespace Project;
 class Controller
 {
     /**
-     *
      * @var \Project\Request
      */
     protected $request;
     
+    /**
+     * Флаг аутентификации
+     * @var bollean
+     */
     protected $isAuth;
 
+    /**
+     * Данные аутентифицированного пользователя
+     * @var object
+     */
     protected $user;
 
-    protected $resources = [
-        'Model' => 'models'
-    ];
             
-    function __construct(\Project\Request $request)
+    function __construct(Request $request)
     {
         $this->request = $request;
-        
-        spl_autoload_register([$this, 'autoload'], true, true);
         
         $this->isAuth = $this->isAuth();
         
         $this->init();
     }
-    
+
     protected function init(){}
 
-    public function autoload($class)
-    {
-        $classParts = explode('\\', $class);
-        
-        $component = $classParts[1];
-        
-        $componentPath = APPLICATION_PATH . '/mvc/components/'
-                . strtolower($component);
-        
-        if (!isset($classParts[2])) {
-            return;
-        }
-        $resourcePath = $this->getResourcePath($classParts[2]);
-        if (!$resourcePath) {
-            return;
-        }
-        
-        $className = array_pop($classParts);
-        
-        $classPath = $componentPath . DIRECTORY_SEPARATOR 
-                . $resourcePath . DIRECTORY_SEPARATOR . $className . '.php';
-        
-        if (!file_exists($classPath)) {
-            return;
-        }
-        
-        include_once $classPath;
-    }
-    
-    protected function getResourcePath($resourceName)
-    {
-        return isset($this->resources[$resourceName]) 
-        ? $this->resources[$resourceName] : null;
-    }
-    
+    /**
+     * Аутентификация
+     * @return boolean
+     */
     protected function isAuth()
     {
         if (!isset($_SESSION['user'])) {
@@ -104,20 +78,22 @@ class Controller
         }
         $user = $_SESSION['user'];
         if (isset($user->id) && isset($user->login)) {
-            $conds = [
-                'id' => filter_var($user->id, FILTER_VALIDATE_INT),
-                'login' => filter_var($user->login, FILTER_VALIDATE_REGEXP, [
-                         'options' => ['regexp' => '/^([a-zA-Z0-9\_\-\$\@\!]+)/']
-                    ])
-            ];
-            $userModel = new \Project\Index\Model\User();
-            $this->user = $userModel->get((object) $conds);
+            $id = filter_var($user->id, FILTER_VALIDATE_INT);
+            $login = filter_var($user->login, FILTER_VALIDATE_REGEXP, [
+                 'options' => ['regexp' => '/^([a-zA-Z0-9\_\-\$\@\!]+)/']
+            ]);
+            $userModel = new User();
+            $this->user = $userModel->getIdentity($id, $login);
             if ($this->user) {
                 return true;
             }
         }
     }
     
+    /**
+     * Переадресация
+     * @param string $url
+     */
     protected function redirect($url = null)
     {
         header('Location: //' . $this->request->getHost() . $url);

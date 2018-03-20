@@ -23,20 +23,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-if (PHP_SESSION_NONE === session_status()) {
-    session_start();
-}
+session_start();
+session_write_close();
 
 defined('APPLICATION_PATH') || define('APPLICATION_PATH', dirname(__DIR__));
 
-include __DIR__ . '/../vendor/autoload.php';
+$loader = require APPLICATION_PATH . '/vendor/autoload.php';
 
-if (!class_exists(\Project\Application::class)) {
+use Project\Application;
+
+if (!class_exists(Application::class)) {
     throw new RuntimeException(
-        'Unable to load application.'
+        'Не удается загрузить приложение.'
     );
 }
 
-\Project\Application::instance()->start();
-
-session_write_close();
+$application = new Application($loader);
+$application->start();

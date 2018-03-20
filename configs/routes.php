@@ -24,33 +24,36 @@
  * THE SOFTWARE.
  */
 
+use Project\Index\Controller\Index;
+use Project\Index\Controller\Auth;
+
 return [
     [
         'name' => 'home',
         'route' => '/',
         'component' => 'index',
-        'controller' => \Project\Index\Controller\Index::class,
+        'controller' => Index::class,
         'action' => 'index'
     ],
     [
         'name' => 'login',
         'route' => '/login',
         'component' => 'index',
-        'controller' => \Project\Index\Controller\Auth::class,
+        'controller' => Auth::class,
         'action' => 'index'
     ],
     [
         'name' => 'logout',
         'route' => '/logout',
         'component' => 'index',
-        'controller' => \Project\Index\Controller\Auth::class,
+        'controller' => Auth::class,
         'action' => 'logout'
     ],
     [
         'name' => 'spend',
         'route' => '/spend',
         'component' => 'index',
-        'controller' => \Project\Index\Controller\Index::class,
+        'controller' => Index::class,
         'action' => 'spend'
     ]
 ];

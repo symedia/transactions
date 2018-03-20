@@ -26,22 +26,30 @@
 
 namespace Project;
 
+use mysqli;
+use Exception;
+
 /**
- *
+ * Обертка для mysqli
+ * Добавляется экранирование по умолчанию
  * 
  * @category   Project
  * @package    Model
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
-class Model
+class Model extends mysqli
 {
-    /**
-     * @var \mysqli
-     */
-    protected $db;
-            
+    protected $lastSqlQuery;
+                
     function __construct()
     {
-        $this->db = \Project\Db::getInstance()->getDb();
+        parent::__construct('localhost', 'root', '123', 'task' );  
+        
+        if ($this->connect_error) { 
+            throw new Exception ( 
+                $this->connect_error, 
+                $this->connect_errno 
+            ); 
+        }  
     }
 }

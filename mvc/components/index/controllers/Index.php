@@ -26,6 +26,9 @@
 
 namespace Project\Index\Controller;
 
+use Project\Controller;
+use Project\Index\Model\User;
+
 /**
  * Контроллер по умолчанию
  * 
@@ -33,7 +36,7 @@ namespace Project\Index\Controller;
  * @package    Default
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
-class Index extends \Project\Controller
+class Index extends Controller
 {
 
     protected function init()
@@ -45,7 +48,7 @@ class Index extends \Project\Controller
 
     public function index()
     {
-        $userModel = new \Project\Index\Model\User;
+        $userModel = new User;
 
         $data = [
             'user' => $this->user,
@@ -58,17 +61,28 @@ class Index extends \Project\Controller
             if (false === $id) {
                 $data['msg']['id'] = 'Необходимо выбрать пользователя!';
             }
+            
+            if (!($toUser = $userModel->getUser($id))) {
+                $data['msg']['id'] = 'Пользователя не существует!';
+            }
 
-            $spend = filter_var($this->request->post('spend'), FILTER_VALIDATE_INT);
-            if (0 > $spend || $spend > $this->user->balance || false === $spend) {
-                $data['msg']['spend'] = 'Неверная сумма списания!';
+            $amount = filter_var($this->request->post('amount'), FILTER_VALIDATE_FLOAT);
+            if (0 > $amount || $amount > $this->user->balance || false === $amount) {
+                $data['msg']['amount'] = 'Неверная сумма списания!';
+            }
+            
+            $fromBalance = $this->user->balance - $amount;
+            if ($fromBalance < 0) {
+                $data['msg']['amount'] = 'Не хватает средств на счете!';
             }
 
             if (isset($data['msg'])) {
                 return $data;
             }
+            
+            $toBalance = $toUser->balance + $amount;
 
-            $result = $userModel->transaction($this->user, $id, $spend);
+            $userModel->transfer($this->user->id, $id, $fromBalance, $toBalance);
             $this->redirect();
         }
 

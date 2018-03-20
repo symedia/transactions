@@ -26,6 +26,12 @@
 
 namespace Project;
 
+use Project\Request;
+use Project\Router;
+use Project\Dispatcher;
+use Project\View;
+use Composer\Autoload\ClassLoader;
+
 /**
  * Оснонвной класс приложения.
  * 
@@ -65,31 +71,29 @@ class Application
      * @var \Project\View
      */
     protected $view;
+    
+    /**
+     * Автозагрузчик классов композера
+     * @var \Composer\Autoload\ClassLoader
+     */
+    protected $loader;
 
     /**
      * Конструирование объекта
+     * @param \Composer\Autoload\ClassLoader $loader
      */
-    public function __construct()
+    public function __construct(ClassLoader $loader)
     {
-        $this->request = new \Project\Request();
+        $this->loader = $loader;
+        
+        $this->autoloadComponents();
+        
+        $this->request = new Request();
        
-        $this->router = new \Project\Router($this->request);
+        $this->router = new Router();
         
-        $this->dispatcher = new \Project\Dispatcher($this->router, $this->request);
+        $this->dispatcher = new Dispatcher($this->router, $this->request);
      }
-
-    /**
-     * Создание синглтона
-     * @return \Project\Application
-     */
-    public static function instance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new Application();
-        }
-        
-        return self::$instance;
-    }
     
     /**
      * Go!
@@ -97,7 +101,25 @@ class Application
     public function start()
     {
         $result = $this->dispatcher->dispatch();
-        $this->view = new \Project\View($result, $this->request);       
+        $this->view = new View($this->request, $result);       
+    }
+    
+    public function autoloadComponents()
+    {
+        $componentsPath = APPLICATION_PATH . '/mvc/components/';
+        $componentsPaths = scandir($componentsPath);
+        foreach ($componentsPaths as $component)
+        {
+            if (in_array($component, ['.', '..'])) {
+                continue;
+            }
+            $controllersPath = $componentsPath . $component . '/controllers/';
+            $controllerPrefix = 'Project\\' . ucfirst($component) . '\Controller\\';
+            $modelsPath = $componentsPath . $component . '/models/';
+            $modelPrefix = 'Project\\' . ucfirst($component) . '\Model\\';
+            $this->loader->addPsr4($controllerPrefix, $controllersPath);
+            $this->loader->addPsr4($modelPrefix, $modelsPath);
+        }
     }
     
     /**

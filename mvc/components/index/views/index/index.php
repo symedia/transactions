@@ -59,9 +59,9 @@
     </dd>
     <dt><label for="amount">Сумма для перевода:</label></dt>
     <dd>
-      <input type="input" value="<?= $this->spend ?>" name="spend" style="width:150px;box-sizing:border-box;">
-      <?php if (isset($this->msg['spend'])): ?>
-      <p style="color:red;"><?= $this->msg['spend'] ?></p>
+      <input type="input" value="<?= $this->spend ?>" name="amount" style="width:150px;box-sizing:border-box;">
+      <?php if (isset($this->msg['amount'])): ?>
+      <p style="color:red;"><?= $this->msg['amount'] ?></p>
       <?php endif; ?>
     </dd>
   </dl>

@@ -26,60 +26,210 @@
 
 namespace Project\Index\Model;
 
+use Project\Model;
+use Exception;
+
 /**
- *
+ * Работа с данными пользователя
  * 
  * @category   
- * @package    User
+ * @package User
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
-class User extends \Project\Model
+class User extends Model
 {
-    public function get($cond)
+    /**
+     * Возвращает объект данных пользователя по заданному id
+     * @param int $id
+     * @return object
+     * @throws Exception
+     */
+    public function getUser($id)
     {
-        $sql = "SELECT * FROM `users` ";
-        if (isset($cond->id)) {
-            $binds[] = "`id` = {$cond->id}";
-            $useIndex = 'id';
+        $sql = "SELECT * FROM `users` WHERE `id` = ?";
+        
+        if (!($stmt = $this->prepare($sql))) {
+            $msg = 'Не удалось подготовить запрос: (' . $this->errno . ') ' 
+                    . $this->error;
+            throw new Exception($msg);
+        }        
+        
+        if (!$stmt->bind_param('i', $id)) {
+             $msg = 'Не удалось задать значения: (' . $stmt->errno . ') ' 
+                     . $stmt->error;
+             throw new Exception($msg);            
         }
-        if (isset($cond->login)) {
-            $binds[] = "`login` = '{$cond->login}'";
-            $useIndex = 'idLogin';
+        
+        if (!$stmt->execute()) {
+             $msg = 'Не удалось выполнить запрос: (' . $stmt->errno . ') ' 
+                     . $stmt->error;
+             throw new Exception($msg);
         }
-        if (isset($cond->password)) {
-            $binds[] = "`password` = '{$cond->password}'";
+
+        if (!($res = $stmt->get_result())) {
+            $msg = 'Не удалось получить результат: (' . $stmt->errno . ') ' 
+                    . $stmt->error;
+            throw new Exception($msg);
         }
-        $sql .= str_replace('?', $useIndex, " USE INDEX (`?`) ");
-        $sql .= " WHERE ";
-        $sql .= implode(" AND ", $binds);
-        return $this->db->query($sql)->fetch_object();
+        
+        return $res->fetch_object();        
     }
     
-    public function save($user)
+    
+    /**
+     * Аутентификация пользователя по логину и паролю
+     * Возвращает объект с идентификационными данными пользователя 
+     * @param string $login
+     * @param string $password
+     * @return object
+     * @throws Exception
+     */
+    public function authenticate($login, $password)
     {
-        $sql = "UPDATE `users` "
-                . "SET `balance` = '{$user->balance}', "
-                . "`spend` = '{$user->spend}', "
-                . "`hash` = '{$user->hash}' "
-                . "WHERE `id` = '{$user->id}'";
-                //exit($sql);
-        return $this->db->query($sql);
+        $sql = "SELECT `id`, `login` FROM `users` WHERE `login` = ? AND `password` = ?";
+        if (!($stmt = $this->prepare($sql))) {
+            $msg = 'Не удалось подготовить запрос: (' . $this->errno . ') ' 
+                    . $this->error;
+            throw new Exception($msg);
+        }        
+        
+        if (!$stmt->bind_param('ss', $login, $password)) {
+             $msg = 'Не удалось задать значения: (' . $stmt->errno . ') ' 
+                     . $stmt->error;
+             throw new Exception($msg);            
+        }
+        
+        if (!$stmt->execute()) {
+             $msg = 'Не удалось выполнить запрос: (' . $stmt->errno . ') ' 
+                     . $stmt->error;
+             throw new Exception($msg);
+        }
+
+        if (!($res = $stmt->get_result())) {
+            $msg = 'Не удалось получить результат: (' . $stmt->errno . ') ' 
+                    . $stmt->error;
+            throw new Exception($msg);
+        }
+        
+        return $res->fetch_object();
     }
     
+    /**
+     * Возвращает объект с данными пользователя по идентификационным данным id и login
+     * @param int $id
+     * @param string $login
+     * @return object
+     * @throws Exception
+     */
+    public function getIdentity($id, $login)
+    {
+        $sql = "SELECT `id`, `login`, `balance` FROM `users` USE INDEX (`idLogin`) "
+                . "WHERE `id` = ? AND `login` = ?";
+        if (!($stmt = $this->prepare($sql))) {
+            $msg = 'Не удалось подготовить запрос: (' . $this->errno . ') ' 
+                    . $this->error;
+            throw new Exception($msg);
+        }        
+        
+        if (!$stmt->bind_param('is', $id, $login)) {
+             $msg = 'Не удалось задать значения: (' . $stmt->errno . ') ' 
+                     . $stmt->error;
+             throw new Exception($msg);            
+        }
+        
+        if (!$stmt->execute()) {
+             $msg = 'Не удалось выполнить запрос: (' . $stmt->errno . ') ' 
+                     . $stmt->error;
+             throw new Exception($msg);
+        }
+
+        if (!($res = $stmt->get_result())) {
+            $msg = 'Не удалось получить результат: (' . $stmt->errno . ') ' 
+                    . $stmt->error;
+            throw new Exception($msg);
+        }
+        
+        return $res->fetch_object();
+    }
+    
+    /**
+     * Получить список пользователей кроме одного
+     * @param int $id Id пользователя для исключения
+     * @return array
+     * @throws Exception
+     */
     public function getUsers($id)
     {
-        $sql = "SELECT * FROM `users` WHERE `id` <> {$id}";
-        return $this->db->query($sql);
+        $sql = "SELECT * FROM `users` WHERE `id` <> ?";
+        
+        if (!($stmt = $this->prepare($sql))) {
+            $msg = 'Не удалось подготовить запрос: (' . $this->errno . ') ' 
+                    . $this->error;
+            throw new Exception($msg);
+        }
+        
+        if (!$stmt->bind_param('i', $id)) {
+             $msg = 'Не удалось задать значения: (' . $stmt->errno . ') ' 
+                     . $stmt->error;
+             throw new Exception($msg);            
+        }
+
+        if (!$stmt->execute()) {
+             $msg = 'Не удалось выполнить запрос: (' . $stmt->errno . ') ' 
+                     . $stmt->error;
+             throw new Exception($msg);
+        }
+
+        if (!($res = $stmt->get_result())) {
+            $msg = 'Не удалось получить результат: (' . $stmt->errno . ') ' 
+                    . $stmt->error;
+            throw new Exception($msg);
+        }
+        
+        return $res;
     }
     
-    public function transaction($user, $id, $spend)
+    /**
+     * Перевод денег от одного пользователя к другому
+     * @param int $fromUserId id пользователя, с баланса которого списывается сумма
+     * @param int $toUserId id пользователя, на баланс которого зачисляется сумма
+     * @param float $fromBalance Новый баланс пользователя после списания
+     * @param float $toBalance Новый баланс пользователя после зачисления
+     */
+    public function transfer($fromUserId, $toUserId, $fromBalance, $toBalance)
     {
-        $this->db->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
-        $this->db->query("SELECT *, @balance := `balance` FROM `users` WHERE `id` = {$user->id} FOR UPDATE");
-        $this->db->query("SELECT * FROM `users` WHERE `id` = {$id} FOR UPDATE");
-        $this->db->query("UPDATE `users` SET `balance` = `balance` - {$spend} WHERE `id` = {$user->id} AND `balance` >= {$spend}");
-        $this->db->query("UPDATE `users` SET `balance` = `balance` + {$spend} WHERE `id` = {$id} AND @balance >= {$spend}");
-        $this->db->commit();
+        $this->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+        $this->updateBalance($fromUserId, $fromBalance);
+        $this->updateBalance($toUserId, $toBalance);
+        $this->commit();
         
+    }
+    
+    /**
+     * Обновление баланса
+     * @param int $id
+     * @param float $balance
+     */
+    protected function updateBalance($id, $balance)
+    {
+        $sql = "UPDATE `users` SET `balance` = ? WHERE `id` = ?";
+        
+        if (!($stmt = $this->prepare($sql))) {
+            $msg = 'Не удалось подготовить запрос: (' . $this->errno . ') ' 
+                    . $this->error;
+            throw new Exception($msg);
+        }
+        
+        if (!$stmt->bind_param('di',$balance,  $id)) {
+             $msg = 'Не удалось задать значения: (' . $stmt->errno . ') ' 
+                     . $stmt->error;
+             throw new Exception($msg);            
+        }
+
+        if (!$stmt->execute()) {
+             $msg = 'Не удалось выполнить запрос: (' . $stmt->errno . ') ' 
+                     . $stmt->error;
+             throw new Exception($msg);
+        }
     }
 }
