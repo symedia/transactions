@@ -75,10 +75,10 @@ class User extends \Project\Model
     public function transaction($user, $id, $spend)
     {
         $this->db->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
-        $this->db->query("SELECT * FROM `users` WHERE `id` = {$user->id} FOR UPDATE");
+        $this->db->query("SELECT *, @balance := `balance` FROM `users` WHERE `id` = {$user->id} FOR UPDATE");
         $this->db->query("SELECT * FROM `users` WHERE `id` = {$id} FOR UPDATE");
         $this->db->query("UPDATE `users` SET `balance` = `balance` - {$spend} WHERE `id` = {$user->id} AND `balance` >= {$spend}");
-        $this->db->query("UPDATE `users` SET `balance` = `balance` + {$spend} WHERE `id` = {$id}");
+        $this->db->query("UPDATE `users` SET `balance` = `balance` + {$spend} WHERE `id` = {$id} AND @balance >= {$spend}");
         $this->db->commit();
         
     }
