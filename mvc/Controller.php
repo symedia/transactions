@@ -27,22 +27,27 @@
 namespace Project;
 
 use Project\Request;
-use Project\Index\Model\User;
+use Project\View;
+use Project\Model\User;
 
 /**
- *
- * 
- * @category   Project
- * @package    Controller
+ * @package Project
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
 class Controller
 {
+
     /**
-     * @var \Project\Request
+     * @var Request
      */
     protected $request;
-    
+
+    /**
+     *
+     * @var Responce
+     */
+    protected $responce;
+
     /**
      * Флаг аутентификации
      * @var bollean
@@ -55,17 +60,27 @@ class Controller
      */
     protected $user;
 
-            
-    function __construct(Request $request)
+    /**
+     * @var View
+     */
+    protected $view;
+
+    function __construct(Request $request, Responce $responce)
     {
+        $this->view = new View($request);
+
         $this->request = $request;
-        
+
+        $this->responce = $responce;
+
         $this->isAuth = $this->isAuth();
-        
+
         $this->init();
     }
 
-    protected function init(){}
+    protected function init()
+    {
+    }
 
     /**
      * Аутентификация
@@ -80,16 +95,21 @@ class Controller
         if (isset($user->id) && isset($user->login)) {
             $id = filter_var($user->id, FILTER_VALIDATE_INT);
             $login = filter_var($user->login, FILTER_VALIDATE_REGEXP, [
-                 'options' => ['regexp' => '/^([a-zA-Z0-9\_\-\$\@\!]+)/']
+                'options' => ['regexp' => '/^([a-zA-Z0-9\_\-\$\@\!]+)/']
             ]);
-            $userModel = new User();
+            $userModel = User::getInstance();
             $this->user = $userModel->getIdentity($id, $login);
             if ($this->user) {
                 return true;
             }
         }
     }
-    
+
+    public function render()
+    {
+        $this->responce->setBody($this->view->render());
+    }
+
     /**
      * Переадресация
      * @param string $url
@@ -99,4 +119,5 @@ class Controller
         header('Location: //' . $this->request->getHost() . $url);
         exit;
     }
+
 }

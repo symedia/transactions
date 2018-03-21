@@ -1,6 +1,6 @@
 <?php
 
-/** 
+/**
  * The MIT License
  *
  * Copyright 2018 Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd.
@@ -23,19 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/**
-     <?php if ($this->confirm): ?>
-    <br>
-    <dt><label for="amount">Подтвреждение списания:</label></dt>
-    <dd>
-      <p>Введите проверочный код: <?= $this->user->hash ?></p>
-      <input type="input" value="" name="hash" style="width:150px;box-sizing:border-box;">
-      <?php if (isset($this->msg['confirmError'])): ?>
-      <p style="color:red;"><?= $this->msg['confirmError'] ?></p>
-      <?php endif; ?>
-    </dd>    
-    <?php endif; ?>
- */
+
 ?>
 
 <h1>Приветствуем <?= $this->user->login ?>!</h1>

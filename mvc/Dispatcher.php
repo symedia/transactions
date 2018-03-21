@@ -28,91 +28,94 @@ namespace Project;
 
 use Project\Router;
 use Project\Request;
-use Project\Index\Controller\Error;
+use Project\Responce;
+use Project\Controller;
+use Project\Controller\Error;
 
 /**
- * @category   
- * @package    Dispatcher
+ * @package Project
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
 class Dispatcher
 {
+
     /**
-     * @var \Project\Router
+     * @var Router
      */
     protected $router;
-    
+
     /**
-     * @var \Project\Request
+     * @var Request|null
      */
-    protected $request;
-    
+    protected $request = null;
+
     /**
-     * @var array
+     * @var Responce|null
      */
-    protected $route;
-    
+    protected $responce = null;
+
     /**
-     * @var \Project\Controller
+     * @var Controller
      */
     protected $controller;
 
     /**
      * Создание диспетчера
-     * @param \Project\Router $router
-     * @param \Project\Request $request
+     * @param Router $router
+     * @param Request $request
      */
-    function __construct(Router $router, Request $request)
+    function __construct(Router $router)
     {
         $this->router = $router;
-        
-        $this->request = $request;
     }
-    
+
     /**
      * Диспетчеризация
-     * @return mixed
      */
-    public function dispatch()
+    public function dispatch(Request $request, Responce $responce)
     {
+        $this->request = $request;
+        $this->responce = $responce;
+
         $route = $this->router->getRoute($this->request->getRequestUri());
-        $controllerClassName = $route['controller'];
+
+        $controllerClass = $route['controller'];
         $action = $route['action'];
 
-        $controllerClassNameParts = explode('\\', $controllerClassName);
-        $controllerName = array_pop($controllerClassNameParts);
+        $controllerClassName
+                = substr($controllerClass, strrpos($controllerClass, '\\') + 1);
 
         $this->request
-                ->setParam('component', $route['component'])
-                ->setParam('controller', strtolower($controllerName))
+                ->setParam('controller', strtolower($controllerClassName))
                 ->setParam('action', $action);
-        
-        if ($this->isDispatchable($controllerClassName, $action)) {
-            $result = $this->controller->{$action}();
-        } else {
-            $result = $this->error404();
+
+        if ($this->isDispatchable($controllerClass, $action)) {
+            $this->controller->{$action}();
+            $this->controller->render();
         }
-        
-        return $result;
+        $this->error404();
     }
-    
-    protected function isDispatchable($controllerClassName, $action)
+
+    protected function isDispatchable($controllerClass, $action)
     {
-        if (class_exists($controllerClassName)) {
-            $this->controller = new $controllerClassName($this->request);
-            if (method_exists($this->controller, $action)) {
+        if (class_exists($controllerClass)) {
+            $this->controller
+                    = new $controllerClass($this->request, $this->responce);
+            if (is_callable([$this->controller, $action])) {
                 return true;
-            }            
+            }
         }
     }
-    
+
     protected function error404()
     {
         $this->request
-            ->setParam('component', 'index')
-            ->setParam('controller', 'error') 
-            ->setParam('action', 'error');
-        $error = new Error();
-        return $error->error();
+                ->setParam('component', 'index')
+                ->setParam('controller', 'error')
+                ->setParam('action', 'error');
+        $error = new Error($this->request, $this->responce);
+        $error->error();
+        $error->render();
     }
+
 }

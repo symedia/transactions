@@ -27,93 +27,70 @@
 namespace Project;
 
 use Project\Request;
+use Project\Responce;
 use Project\Router;
 use Project\Dispatcher;
 use Project\View;
-use Composer\Autoload\ClassLoader;
 
 /**
  * Оснонвной класс приложения.
- * 
- * @category   
- * @package    Application
+ *
+ * @package Project
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
 class Application
 {
+
     /**
      * Запрос
-     * @var \Project\Request 
+     * @var Request
      */
     protected $request;
-    
+
     /**
      * Роутер
-     * @var \Project\Router
+     * @var Router
      */
     protected $router;
-    
-    
+
     /**
      * Диспетчер
-     * @var \Project\Dispatcher
+     * @var Dispatcher
      */
     protected $dispatcher;
-    
+
     /**
      * Представление
-     * @var \Project\View
+     * @var View
      */
     protected $view;
-    
+
     /**
-     * Автозагрузчик классов композера
-     * @var \Composer\Autoload\ClassLoader
+     * Объект ответа
+     * @var Responce
      */
-    protected $loader;
+    protected $responce;
 
     /**
      * Конструирование объекта
-     * @param \Composer\Autoload\ClassLoader $loader
      */
-    public function __construct(ClassLoader $loader)
+    public function __construct()
     {
-        $this->loader = $loader;
-        
-        $this->autoloadComponents();
-        
-        $this->request = new Request();
-       
         $this->router = new Router();
-        
-        $this->dispatcher = new Dispatcher($this->router, $this->request);
-     }
-    
+
+        $this->request = new Request();
+
+        $this->responce = new Responce();
+
+        $this->dispatcher = new Dispatcher($this->router);
+    }
+
     /**
      * Go!
      */
     public function start()
     {
-        $result = $this->dispatcher->dispatch();
-        $this->view = new View($this->request, $result);       
+        $this->dispatcher->dispatch($this->request, $this->responce);
+        $this->responce->outputBody();
     }
-    
-    public function autoloadComponents()
-    {
-        $componentsPath = APPLICATION_PATH . '/mvc/components/';
-        $componentsPaths = scandir($componentsPath);
-        foreach ($componentsPaths as $component)
-        {
-            if (in_array($component, ['.', '..'])) {
-                continue;
-            }
-            $controllersPath = $componentsPath . $component . '/controllers/';
-            $controllerPrefix = 'Project\\' . ucfirst($component) . '\Controller\\';
-            $modelsPath = $componentsPath . $component . '/models/';
-            $modelPrefix = 'Project\\' . ucfirst($component) . '\Model\\';
-            $this->loader->addPsr4($controllerPrefix, $controllersPath);
-            $this->loader->addPsr4($modelPrefix, $modelsPath);
-        }
-    }
-   
 }

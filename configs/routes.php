@@ -1,6 +1,6 @@
 <?php
 
-/** 
+/**
  * The MIT License
  *
  * Copyright 2018 Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd.
@@ -24,35 +24,31 @@
  * THE SOFTWARE.
  */
 
-use Project\Index\Controller\Index;
-use Project\Index\Controller\Auth;
+use Project\Controller\Index;
+use Project\Controller\Auth;
 
 return [
     [
         'name' => 'home',
         'route' => '/',
-        'component' => 'index',
         'controller' => Index::class,
         'action' => 'index'
     ],
     [
         'name' => 'login',
         'route' => '/login',
-        'component' => 'index',
         'controller' => Auth::class,
         'action' => 'index'
     ],
     [
         'name' => 'logout',
         'route' => '/logout',
-        'component' => 'index',
         'controller' => Auth::class,
         'action' => 'logout'
     ],
     [
         'name' => 'spend',
         'route' => '/spend',
-        'component' => 'index',
         'controller' => Index::class,
         'action' => 'spend'
     ]

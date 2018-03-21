@@ -1,6 +1,6 @@
 <?php
 
-/** 
+/**
  * The MIT License
  *
  * Copyright 2018 Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd.
@@ -38,5 +38,5 @@ if (!class_exists(Application::class)) {
     );
 }
 
-$application = new Application($loader);
+$application = new Application();
 $application->start();

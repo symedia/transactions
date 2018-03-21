@@ -24,38 +24,37 @@
  * THE SOFTWARE.
  */
 
-namespace Project\Index\Controller;
+namespace Project\Controller;
 
 use Project\Controller;
-use Project\Index\Model\User;
+use Project\Model\User;
 
 /**
  * Контроллер авторизации
- * 
- * @category   
- * @package    Auth
+ *
+ * @category Controller
+ * @package Project
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
 class Auth extends Controller
 {
+
     /**
      * Авторизация
-     * @return array
      */
     public function index()
     {
         if ($this->isAuth) {
             $this->redirect();
         }
-        
+
         if ($this->request->isPost()) {
             $login = filter_var($this->request->post('login'), FILTER_SANITIZE_STRING);
-            $password = filter_var($this->request->post('password'), 
-                FILTER_VALIDATE_REGEXP, [
-                     'options' => ['regexp' => '/^([a-zA-Z0-9\_\-\$\@\!]+)/']
-                ]);
-            
-            $userModel = new User();
+            $password = filter_var($this->request->post('password'), FILTER_VALIDATE_REGEXP, [
+                'options' => ['regexp' => '/^([a-zA-Z0-9\_\-\$\@\!]+)/']
+            ]);
+
+            $userModel = User::getInstance();
             $user = $userModel->authenticate($login, $password);
             if ($user) {
                 session_start();
@@ -66,7 +65,7 @@ class Auth extends Controller
             }
         }
     }
-    
+
     /**
      * Разлогин
      */
@@ -80,4 +79,5 @@ class Auth extends Controller
         session_destroy();
         $this->redirect();
     }
+
 }

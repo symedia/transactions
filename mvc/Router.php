@@ -27,33 +27,34 @@
 namespace Project;
 
 /**
- * @category   
- * @package    Router
+ * @package Project
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
 class Router
 {
+
     /**
      * @var array
      */
     protected $routes;
-            
+
     function __construct()
     {
-        $this->routes = include_once APPLICATION_PATH 
+        $this->routes = include_once APPLICATION_PATH
                 . DIRECTORY_SEPARATOR . 'configs/routes.php';
     }
-    
+
     /**
      * @param string $requestUri
      * @return array
      */
     public function getRoute($requestUri)
     {
-        foreach($this->routes as $item) {
+        foreach ($this->routes as $item) {
             if ($item['route'] === $requestUri) {
                 return $item;
             }
         }
     }
+
 }

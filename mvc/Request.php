@@ -27,42 +27,40 @@
 namespace Project;
 
 /**
- * @category   
- * @package    Request
+ * @package Project
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
 class Request
 {
-   
+
     /**
      * @var array
      */
     protected $params;
-
 
     /**
      * $_SERVER
      * @var array
      */
     protected $server;
-    
+
     /**
      * $_POST
      * @var array
      */
     protected $post;
-    
+
     /**
      *
      * @var null|bullean
      */
     protected $isPost;
-    
+
     /**
      * @var string
      */
     protected $requestUri;
-   
+
     function __construct()
     {
         $server = filter_input_array(INPUT_SERVER);
@@ -76,13 +74,12 @@ class Request
             $this->post = $post;
         }
     }
-    
+
     public function getRequestUri()
     {
         return $this->requestUri;
     }
-    
-    
+
     public function getParams($name = null)
     {
         if (null === $name) {
@@ -90,18 +87,22 @@ class Request
         }
         return isset($this->params[$name]) ? $this->params[$name] : null;
     }
-    
+
     public function setParam($name, $value = null)
     {
         $this->params[$name] = $value;
         return $this;
     }
-    
+
+    /**
+     * Возвращает флаг наличия POST параметров
+     * @return type
+     */
     public function isPost()
     {
         return $this->isPost;
     }
-    
+
     public function post($name = null)
     {
         if (null === $name) {
@@ -109,9 +110,10 @@ class Request
         }
         return isset($this->post[$name]) ? $this->post[$name] : null;
     }
-    
+
     public function getHost()
     {
         return filter_var($this->server['HTTP_HOST'], FILTER_SANITIZE_URL);
     }
+
 }

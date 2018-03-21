@@ -11,7 +11,9 @@
     ],
     "autoload": {
         "psr-4": {
-            "Project\\": "mvc/"
+            "Project\\": "mvc/",
+            "Project\\Controller\\": "mvc/controllers/",
+            "Project\\Model\\": "mvc/models/"
         }
     },
     "require": {}

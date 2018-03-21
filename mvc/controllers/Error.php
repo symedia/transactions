@@ -24,19 +24,21 @@
  * THE SOFTWARE.
  */
 
-namespace Project\Index\Controller;
+namespace Project\Controller;
+
+use Project\Controller;
 
 /**
- *
- * 
- * @category   Project\Index\Controller
- * @package    Error
+ * @category   Controller
+ * @package    Project
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
-class Error
+class Error extends Controller
 {
+
     public function error()
     {
         header("HTTP/1.0 404 Not Found");
     }
+
 }

@@ -24,32 +24,17 @@
  * THE SOFTWARE.
  */
 
-namespace Project;
+?>
 
-use mysqli;
-use Exception;
-
-/**
- * Обертка для mysqli
- * Добавляется экранирование по умолчанию
- * 
- * @category   Project
- * @package    Model
- * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
- */
-class Model extends mysqli
-{
-    protected $lastSqlQuery;
-                
-    function __construct()
-    {
-        parent::__construct('localhost', 'root', '123', 'task' );  
-        
-        if ($this->connect_error) { 
-            throw new Exception ( 
-                $this->connect_error, 
-                $this->connect_errno 
-            ); 
-        }  
-    }
-}
+<div style="width:300px;margin:0 auto;">
+  <h1 style="font-size:14px;">Войдите чтобы начать работать</h1>
+    <form action="/login" method="post">
+      <dl>
+        <dt><label for="login">Логин:</label></dt>
+        <dd><input type="text" name="login" value="<?= $this->login ?>"></dd>
+        <dt><label for="password">Пароль:</label></dt>
+        <dd><input type="password" name="password"></dd>
+      </dl>
+      <input type="submit" value="Войти">
+    </form>
+</div>

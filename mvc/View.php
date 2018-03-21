@@ -30,71 +30,105 @@ use Project\Request;
 use Exception;
 
 /**
- *
- * 
- * @category   
- * @package    View
+ * @package Project
  * @author Gregory V Lominoga aka Gromodar <@gromodar at telegram>, Symedia Ltd
  */
 class View
 {
-    protected $result;
-
-    protected $request;
-    
-    protected $componentPath;
+    /**
+     * @var array
+     */
+    protected $vars = [];
 
     /**
-     * @param \Project\Request $request
-     * @param array $result
+     * @var Request
      */
-    public function __construct(Request $request, $result = null)
+    protected $request;
+
+    protected $fileTemplate;
+
+    protected $layoutPath;
+
+    /**
+     * @param Request $request
+     */
+    public function __construct(Request $request)
     {
-        $this->result = $result;
         $this->request = $request;
-        
-        $component = $this->request->getParams('component');
-        $this->componentPath = APPLICATION_PATH 
-                . '/mvc/components/' . $component;
-        
-        $this->layout();
-    }
-    
-    public function content()
-    {
+
+        $this->layoutPath = APPLICATION_PATH . '/mvc/views/layout.php';
+
+        if (!file_exists($this->layoutPath)) {
+            $msg = 'Файл шаблона не найден: ' . $this->layoutPath;
+            throw new Exception($msg);
+        }
+
         $controller = $this->request->getParams('controller');
         $action = $this->request->getParams('action');
-        
-        $fileTemplate = $this->componentPath. '/views/' . $controller  
-                . DIRECTORY_SEPARATOR . $action . '.php';
-        
-        if (!file_exists($fileTemplate)) {
-            $msg = 'Файл макета не найден: ' . $fileTemplate;
-            throw new Exception($msg);
-        }
-        
-        require $fileTemplate;       
-    }
-    
-    public function __get($name)
-    {
-        return isset($this->result[$name]) ? $this->result[$name] : null;
-    }
-    
-    protected function layout()
-    {
-        $layoutPath = $this->componentPath . '/views/layout.php';
 
-        if (!file_exists($layoutPath)) {
-            $msg = 'Файл шаблона не найден: ' . $layoutPath;
+        $this->fileTemplate = APPLICATION_PATH . '/mvc/views/' . $controller
+                . DIRECTORY_SEPARATOR . $action . '.php';
+
+        if (!file_exists($this->fileTemplate)) {
+            $msg = 'Файл макета не найден: ' . $this->fileTemplate;
             throw new Exception($msg);
         }
-        
-        require_once $layoutPath;
     }
-    
+
+    /**
+     * Подключение файла макета
+     */
+    public function content()
+    {
+        require $this->fileTemplate;
+    }
+
+    /**
+     * Подключение главного файла шаблона
+     */
+    public function render()
+    {
+        require_once $this->layoutPath;
+    }
+
+    /**
+     * Хелпер для форматирования
+     * @param float $number
+     * @return string
+     */
     public function rub($number)
     {
         return number_format($number, 2, '.', ' ');
     }
+
+    /**
+     * Возвращает значения свойств переданные при выполнении контроллера
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return isset($this->$name) ? $this->$name : null;
+    }
+
+    /**
+     * Устанавливает значения свойств для использования в макете
+     * @param string $name
+     * @param mixed $value
+     */
+    public function __set($name, $value = null)
+    {
+        $this->$name = $value;
+    }
+
+    /**
+     * Проверяет наличие элемента
+     * @param string $name
+     * @return bollean
+     */
+    public function __isset($name)
+    {
+        return isset($this->$name);
+    }
+
 }
