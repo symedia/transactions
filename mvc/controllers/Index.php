@@ -73,7 +73,7 @@ class Index extends Controller
             $destinationUser = $userModel->getUser($destinationUserId);
             if (!$destinationUser) {
                 $this->view->msg = ['id' => 'Пользователя не существует!'];
-                $userModel->closeTransaction();
+                $userModel->transactionCommit();
                 return;
             }
 
@@ -82,7 +82,7 @@ class Index extends Controller
             $senderBalance = $senderUser->balance - $amount;
             if ($senderBalance < 0) {
                 $this->view->msg = ['amount' => 'Не хватает средств на счете!'];
-                $userModel->closeTransaction();
+                $userModel->transactionCommit();
                 return;
             }
 
