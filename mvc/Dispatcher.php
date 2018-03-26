@@ -91,17 +91,18 @@ class Dispatcher
 
         if ($this->isDispatchable($controllerClass, $action)) {
             $this->controller->{$action}();
-            $this->controller->render();
+            $responce->setBody($this->controller->getBody());
+        } else {
+            $this->error404();
         }
-        $this->error404();
     }
 
     protected function isDispatchable($controllerClass, $action)
     {
         if (class_exists($controllerClass)) {
-            $this->controller
-                    = new $controllerClass($this->request, $this->responce);
-            if (is_callable([$this->controller, $action])) {
+            $controller = new $controllerClass($this->request, $this->responce);
+            if (is_callable([$controller, $action])) {
+                $this->controller = $controller;
                 return true;
             }
         }
@@ -110,12 +111,11 @@ class Dispatcher
     protected function error404()
     {
         $this->request
-                ->setParam('component', 'index')
                 ->setParam('controller', 'error')
                 ->setParam('action', 'error');
         $error = new Error($this->request, $this->responce);
         $error->error();
-        $error->render();
+        $this->responce->setBody($error->getBody());
     }
 
 }

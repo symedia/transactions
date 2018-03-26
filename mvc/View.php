@@ -36,11 +36,6 @@ use Exception;
 class View
 {
     /**
-     * @var array
-     */
-    protected $vars = [];
-
-    /**
      * @var Request
      */
     protected $request;
@@ -58,21 +53,11 @@ class View
 
         $this->layoutPath = APPLICATION_PATH . '/mvc/views/layout.php';
 
-        if (!file_exists($this->layoutPath)) {
-            $msg = 'Файл шаблона не найден: ' . $this->layoutPath;
-            throw new Exception($msg);
-        }
-
         $controller = $this->request->getParams('controller');
         $action = $this->request->getParams('action');
 
         $this->fileTemplate = APPLICATION_PATH . '/mvc/views/' . $controller
                 . DIRECTORY_SEPARATOR . $action . '.php';
-
-        if (!file_exists($this->fileTemplate)) {
-            $msg = 'Файл макета не найден: ' . $this->fileTemplate;
-            throw new Exception($msg);
-        }
     }
 
     /**
@@ -80,7 +65,11 @@ class View
      */
     public function content()
     {
-        require $this->fileTemplate;
+        if (!file_exists($this->fileTemplate)) {
+            $msg = 'Файл макета не найден: ' . $this->fileTemplate;
+            throw new Exception($msg);
+        }
+        require_once $this->fileTemplate;
     }
 
     /**
@@ -88,7 +77,14 @@ class View
      */
     public function render()
     {
+        if (!file_exists($this->layoutPath)) {
+            $msg = 'Файл шаблона не найден: ' . $this->layoutPath;
+            throw new Exception($msg);
+        }
+
+        ob_start();
         require_once $this->layoutPath;
+        return ob_get_clean();
     }
 
     /**

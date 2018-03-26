@@ -73,7 +73,7 @@ class Controller
 
         $this->responce = $responce;
 
-        $this->isAuth = $this->isAuth();
+        $this->isAuth();
 
         $this->init();
     }
@@ -100,14 +100,14 @@ class Controller
             $userModel = User::getInstance();
             $this->user = $userModel->getIdentity($id, $login);
             if ($this->user) {
-                return true;
+                $this->isAuth = true;
             }
         }
     }
 
-    public function render()
+    public function getBody()
     {
-        $this->responce->setBody($this->view->render());
+        return $this->view->render();
     }
 
     /**
